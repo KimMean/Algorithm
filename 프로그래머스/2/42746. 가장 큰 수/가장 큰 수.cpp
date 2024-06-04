@@ -5,26 +5,26 @@
 
 using namespace std;
 
-bool Comp(string &a, string &b)
+bool Comp(const string &lhs, const string &rhs)
 {
-    return a + b > b + a;
+    return (lhs + rhs) > (rhs + lhs);
 }
 
 string solution(vector<int> numbers) {
     string answer = "";
     
     vector<string> strings;
-    for (int i=0; i<numbers.size(); i++) {
-        strings.push_back(to_string(numbers[i]));
+    
+    for (auto elem : numbers) {
+        strings.push_back(to_string(elem));
     }
     sort(strings.begin(), strings.end(), Comp);
     
-    for (int i=0; i<strings.size(); i++)
-        answer += strings[i];
+    for (auto elem : strings)
+        answer += elem;
     
     if (answer[0] == '0')
         answer = '0';
 
-    
     return answer;
 }
