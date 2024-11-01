@@ -1,40 +1,66 @@
 #include<vector>
-#include<cstring>
-#include<algorithm>
+#include<iostream>
 #include<queue>
+#include<climits>
+
 using namespace std;
 
-bool vst[104][104];
-int dist[104][104];
-int dx[4] = {1,-1,0,0};
-int dy[4] = {0,0,1,-1};
-queue<pair<int,int>> q;
+int answer = -1;
+// 상, 하, 좌, 우
+int dy[] = {1, -1, 0, 0};
+int dx[] = {0, 0, -1, 1};
+
+void bfs(vector<vector<int>>& map)
+{
+    vector<vector<int>> dist(map.size(), vector<int>(map[0].size(), INT_MAX));
+    dist[0][0] = 0;
+    
+    int n = map.size();     // 행
+    int m = map[0].size();  // 열
+    
+    queue<pair<int, int>> q;
+    q.push({0, 0}); // 행, 열
+    
+    while(!q.empty())
+    {
+        pair<int, int> current = q.front();
+        q.pop();
+        
+        // 좌우 상하 확인
+        for(int i = 0; i < 4; i++)
+        {
+            int nx = current.first + dy[i];
+            int ny = current.second + dx[i];
+                        
+            // 맵 범위 확인
+            if(nx < 0 || ny < 0 || nx >= n || ny >= m)
+                continue;
+            
+            // 벽인지 확인
+            if(map[nx][ny] == 0)
+                continue;
+            
+            // 더 짧은 거리인지 확인
+            if(dist[nx][ny] <= dist[current.first][current.second] + 1)
+                continue;
+            
+            // 거리 업데이트
+            dist[nx][ny] = dist[current.first][current.second] + 1;
+            q.push({nx, ny});
+            
+        }
+    }
+    
+    if(dist[n-1][m-1] == INT_MAX)
+        answer = -1;
+    else
+        answer = dist[n-1][m-1] + 1;
+    
+}
 
 int solution(vector<vector<int>> m)
 {
-    int ans = 0;
-    int ns = m.size();
-    int ms = m[0].size();
-    memset(dist, -1, sizeof(dist));
-    q.push({0,0});
-    vst[0][0] = 1;
-    dist[0][0] = 1;
-    while(!q.empty()){
-        auto cur = q.front(); q.pop();
-        if(cur.first == ns - 1 && cur.second == ms - 1) {
-            return dist[ns-1][ms-1];
-        }
-        for(int dir=0; dir<4; dir++){
-            int nx = cur.second + dx[dir];
-            int ny = cur.first + dy[dir];
-            if(nx < 0 || ny < 0 || nx >= ms || ny >= ns) continue;
-            if(vst[ny][nx] || m[ny][nx] == 0 || dist[ny][nx] != -1) continue;
-            q.push({ny,nx});
-            vst[ny][nx];
-            dist[ny][nx] = dist[cur.first][cur.second] + 1;
-        }
-    }
-    if(dist[ns-1][ms-1] == -1) ans = -1;
-    else ans = dist[ns-1][ms-1];
-    return ans;
+    bfs(m);
+    
+    return answer;
 }
