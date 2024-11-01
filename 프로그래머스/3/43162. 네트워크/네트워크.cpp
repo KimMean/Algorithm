@@ -1,31 +1,47 @@
 #include <string>
 #include <vector>
+#include <queue>
 
 using namespace std;
+int answer = 0;
 
-bool isVisited[200]{false};
-
-void DFS(vector<vector<int>>& coms, int cur, int n)
+void dfs(int n, vector<vector<int>>& computers, vector<bool>& visited)
 {
-    isVisited[cur] = true;
+    if(visited[n])
+        return;
     
-    for(int i = 0; i < n; i++){
-        // 아직 방문하지 않았고, 연결되어 있는 컴퓨터 번호 일 때
-        if(!isVisited[i] && coms[cur][i] == 1){
-            DFS(coms, i, n);
+    answer++;
+    // q 넣고
+    queue<int> q;
+    q.push(n);
+    
+    while(!q.empty())
+    {
+        int node = q.front();
+        q.pop();
+        
+        if(visited[node])
+            continue;
+        
+        visited[node] = true;
+        
+        // 한 행 돌면서 연결된 노드 푸시
+        for(int i = 0; i < computers.size(); i++)
+        {
+            if(node == i)
+                continue;
+            
+            if(computers[node][i] == 1)
+                q.push(i);
         }
     }
 }
 
 int solution(int n, vector<vector<int>> computers) {
-    int answer = 0;
+    
+    vector<bool> visited(n, false);
+    
     for(int i = 0; i < n; i++)
-    {
-        if(!isVisited[i])
-        {
-            DFS(computers, i, n);
-            answer++;
-        }
-    }
+        dfs(i, computers, visited);
     return answer;
 }
