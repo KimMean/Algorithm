@@ -5,13 +5,12 @@
 using namespace std;
 int answer = 0;
 
-void dfs(int n, vector<vector<int>>& computers, vector<bool>& visited)
+void dfs(int n, vector<vector<int>>& com, vector<bool>& visit)
 {
-    if(visited[n])
-        return;
+    // 이미 방문했다면 검사할 필요가 없다.
+    if(visit[n]) return;
     
     answer++;
-    // q 넣고
     queue<int> q;
     q.push(n);
     
@@ -19,29 +18,31 @@ void dfs(int n, vector<vector<int>>& computers, vector<bool>& visited)
     {
         int node = q.front();
         q.pop();
+        visit[node] = true;
         
-        if(visited[node])
-            continue;
-        
-        visited[node] = true;
-        
-        // 한 행 돌면서 연결된 노드 푸시
-        for(int i = 0; i < computers.size(); i++)
+        for(int i = 0; i < com[node].size(); i++)
         {
-            if(node == i)
-                continue;
+            // i와 node가 같은 경우는 자기 자신뿐이다.
+            if(i == node) continue;
             
-            if(computers[node][i] == 1)
-                q.push(i);
+            if(!visit[i])
+            {
+                if(com[node][i] == 1) q.push(i);
+            }
         }
     }
+    
 }
 
 int solution(int n, vector<vector<int>> computers) {
-    
-    vector<bool> visited(n, false);
+    // 방문정보 n개를 false로 초기화
+    vector<bool> visit(n, false);
     
     for(int i = 0; i < n; i++)
-        dfs(i, computers, visited);
+    {
+        dfs(i, computers, visit);
+    }
+    
+    
     return answer;
 }
